@@ -1,11 +1,15 @@
-// netlify/functions/tasks.js — Dashboard Admin Yannick v4
+// netlify/functions/tasks.js — Dashboard Admin Yannick v5
 // GET  -> liste les tâches de la base Notion
-// POST -> { page_id, action: "done" | "in_progress" | "verify" }
+// POST -> { page_id, action: "statut"|"changeprio"|"changeproject", value: "..." }
 
 const DATA_SOURCE_ID = "182186c5-80ba-438f-874d-03e52b826bab";
 const API = "https://api.notion.com/v1";
 
 const STATUS_FOR_ACTION = {
+  attente: "En attente",
+  encours: "En cours",
+  verif: "À vérifier",
+  fait: "Fait",
   done: "Fait",
   in_progress: "En cours",
   verify: "En attente de vérification",
@@ -112,19 +116,50 @@ exports.handler = async (event) => {
     if (event.httpMethod === "POST") {
       let body = {};
       try { body = JSON.parse(event.body || "{}"); } catch (_) {}
-      const { page_id, action } = body;
-      const statut = STATUS_FOR_ACTION[action];
-      if (!page_id || !statut) {
+      const { page_id, action, value } = body;
+
+      if (!page_id || !action) {
         return json(400, {
           ok: false,
           error: "BAD_REQUEST",
-          message: "page_id et action (done | in_progress | verify) sont requis.",
+          message: "page_id et action sont requis.",
         });
       }
-      const properties = { "Statut": { select: { name: statut } } };
-      if (action === "done") {
-        properties["Fait le"] = { date: { start: new Date().toISOString().slice(0, 10) } };
+
+      const properties = {};
+
+      // Gestion des statuts (ancien format pour compatibilité)
+      if (["done", "in_progress", "verify"].includes(action)) {
+        const statut = STATUS_FOR_ACTION[action];
+        properties["Statut"] = { select: { name: statut } };
+        if (action === "done") {
+          properties["Fait le"] = { date: { start: new Date().toISOString().slice(0, 10) } };
+        }
       }
+      // Gestion des changements de statut (nouveau format v5)
+      else if (["attente", "encours", "verif", "fait"].includes(action)) {
+        const statut = STATUS_FOR_ACTION[action];
+        properties["Statut"] = { select: { name: statut } };
+        if (action === "fait") {
+          properties["Fait le"] = { date: { start: new Date().toISOString().slice(0, 10) } };
+        }
+      }
+      // Changement de priorité
+      else if (action === "changeprio" && value) {
+        properties["Priorité"] = { select: { name: value } };
+      }
+      // Changement de projet
+      else if (action === "changeproject" && value) {
+        properties["Projet"] = { select: { name: value } };
+      }
+      else {
+        return json(400, {
+          ok: false,
+          error: "UNKNOWN_ACTION",
+          message: "Action non reconnue: " + action,
+        });
+      }
+
       const { res, data } = await notion(
         `/pages/${page_id}`,
         { method: "PATCH", body: JSON.stringify({ properties }) },
@@ -133,7 +168,7 @@ exports.handler = async (event) => {
       );
       if (res.status === 401) throw { code: "NOTION_TOKEN_INVALID", message: "Token Notion refusé (401)." };
       if (!res.ok) throw { code: "NOTION_HTTP_" + res.status, message: data.message || ("Erreur Notion HTTP " + res.status) };
-      return json(200, { ok: true, page_id, statut });
+      return json(200, { ok: true, page_id, action, value });
     }
 
     return json(405, { ok: false, error: "METHOD_NOT_ALLOWED", message: "Méthode non autorisée." });
