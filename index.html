@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>ADMIN YANNICK v4</title>
+<title>ADMIN YANNICK v5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Archivo+Black&display=swap" rel="stylesheet">
@@ -70,16 +70,18 @@ header h1{font-size:1.5rem;font-weight:700;}
 /* ========== MODAL DÉTAILS TÂCHE ========== */
 #taskModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:101;align-items:center;justify-content:center;padding:20px;}
 #taskModal.show{display:flex;}
-.task-detail-card{background:#fff;border:var(--bd);box-shadow:10px 10px 0 var(--ink);padding:24px;max-width:600px;width:100%;border-radius:16px;max-height:90vh;overflow-y:auto;}
+.task-detail-card{background:#fff;border:var(--bd);box-shadow:10px 10px 0 var(--ink);padding:24px;max-width:700px;width:100%;border-radius:16px;max-height:90vh;overflow-y:auto;position:relative;}
 .task-detail-card h2{font-size:1.1rem;margin-bottom:16px;font-family:'Archivo Black',sans-serif;}
-.detail-row{margin-bottom:14px;}
-.detail-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.7;margin-bottom:4px;}
+.detail-row{margin-bottom:16px;}
+.detail-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.7;margin-bottom:6px;}
 .detail-value{font-size:.85rem;line-height:1.5;word-break:break-word;}
+.detail-select, .detail-input{width:100%;padding:8px 10px;border:2px solid var(--ink);border-radius:6px;font-family:inherit;font-size:.85rem;background:#fff;}
+.detail-select:focus, .detail-input:focus{outline:none;box-shadow:0 0 0 3px var(--yellow);}
 .detail-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
 .detail-pill{border:2px solid var(--ink);border-radius:99px;padding:3px 10px;font-size:.65rem;font-weight:700;text-transform:uppercase;}
 .close-task{position:absolute;top:12px;right:12px;background:var(--ink);color:#fff;border:none;padding:6px 12px;cursor:pointer;font-weight:700;border-radius:6px;font-size:.8rem;}
 .task-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
-.action-btn{font-family:inherit;font-weight:700;font-size:.72rem;padding:9px 14px;border:3px solid var(--ink);cursor:pointer;text-transform:uppercase;letter-spacing:1px;box-shadow:3px 3px 0 var(--ink);}
+.action-btn{font-family:inherit;font-weight:700;font-size:.72rem;padding:9px 14px;border:3px solid var(--ink);cursor:pointer;text-transform:uppercase;letter-spacing:1px;box-shadow:3px 3px 0 var(--ink);background:#fff;}
 .action-btn.done{background:var(--green);}
 .action-btn.progress{background:var(--blue);color:#fff;}
 .action-btn.verify{background:var(--orange);}
@@ -105,7 +107,7 @@ header h1{font-size:1.5rem;font-weight:700;}
 .section.hidden{display:none;}
 .sec-head{padding:13px 18px;border-bottom:var(--bd);display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
 .sec-head h2{font-family:'Archivo Black',sans-serif;font-size:1rem;letter-spacing:1px;text-transform:uppercase;flex:1;}
-.h-encours{background:var(--blue);color:#fff;} .h-verif{background:var(--orange);} .h-pink{background:var(--pink);} .h-turq{background:var(--turq);}
+.h-attente{background:var(--turq);color:#fff;} .h-encours{background:var(--blue);color:#fff;} .h-verif{background:var(--orange);} .h-pink{background:var(--pink);} .h-turq{background:var(--turq);}
 .count{background:var(--ink);color:#fff;min-width:26px;height:26px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;}
 .h-encours .count{background:#fff;color:var(--ink);}
 .caret{font-size:.8rem;transition:transform .2s ease;}
@@ -117,6 +119,7 @@ header h1{font-size:1.5rem;font-weight:700;}
 /* ========== CARTES TÂCHES ========== */
 .card{background:#fff;border:2.5px solid var(--ink);border-radius:12px;box-shadow:5px 5px 0 var(--ink);padding:13px 14px;cursor:pointer;transition:all .2s ease;}
 .card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+.card.urgent{border-left:5px solid var(--red);}
 .card.verif{border-left:5px solid var(--orange);}
 .card .line1{display:flex;gap:9px;align-items:baseline;}
 .num{background:var(--ink);color:#fff;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:6px;flex-shrink:0;}
@@ -124,11 +127,11 @@ header h1{font-size:1.5rem;font-weight:700;}
 .desc{font-size:.72rem;opacity:.7;margin:6px 0 9px;line-height:1.5;}
 .pills{display:flex;gap:7px;flex-wrap:wrap;}
 .pill{border:2px solid var(--ink);border-radius:99px;padding:2px 10px;font-size:.62rem;font-weight:700;text-transform:uppercase;background:#fff;}
-.p-haute{background:var(--red);color:#fff;} .p-moyenne{background:var(--orange);} .p-basse{background:var(--green);}
+.p-urgent{background:var(--red);color:#fff;} .p-eleve{background:var(--orange);} .p-moyen{background:var(--yellow);} .p-bas{background:var(--green);}
 .p-verif{background:var(--turq);color:#fff;}
 
 footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
-.tag-live{display:inline-block;background:var(--green);color:#fff;padding:2px 10px;border-radius:99px;font-weight:700;}
+.tag-v5{display:inline-block;background:var(--blue);color:#fff;padding:2px 10px;border-radius:99px;font-weight:700;}
 </style>
 </head>
 <body>
@@ -136,10 +139,10 @@ footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
 <!-- ===== BANDEAU ===== -->
 <div class="banner">
   <div class="b-row b-row1">
-    <div class="tile t-pink small" onclick="filterTab('semaine')">HI! ✨<br>SEMAINE 28</div>
+    <div class="tile t-pink small" onclick="filterTab('urgent')">HI! ✨<br>SEMAINE 28</div>
     <div class="tile t-ink"><div class="b-name">YANNICK</div><div class="b-sub">C'est mon board</div></div>
     <div class="tile t-blue" onclick="toggleStats()"><span style="font-size:1.6rem;">📊</span></div>
-    <div class="tile t-yellow" onclick="filterTab('all')"><span style="font-size:1.6rem;">✦</span></div>
+    <div class="tile t-yellow" onclick="showNewProjectModal()"><span style="font-size:1.6rem;">➕</span></div>
   </div>
   <div class="b-row b-row2">
     <div class="tile t-yellow b-letter">T</div>
@@ -151,9 +154,9 @@ footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
   </div>
   <div class="b-row b-row3">
     <div class="tile t-cream" onclick="filterTab('all')"><span class="stat-n" id="nOpen">—</span><span class="small">tâches ouvertes</span></div>
-    <div class="tile t-turq"><span class="stat-n" id="nBlocs">—</span><span class="small">contextes</span></div>
-    <div class="tile t-ink"><span class="bang">BANG!</span><span class="small" id="nWeek">— tâches</span></div>
-    <div class="tile t-beige"><span style="font-size:1.3rem;">⚙️</span><span class="small">live · notion</span></div>
+    <div class="tile t-turq"><span class="stat-n" id="nProjects">—</span><span class="small">projets</span></div>
+    <div class="tile t-ink"><span class="bang">🔥</span><span class="small" id="nUrgent">— urgentes</span></div>
+    <div class="tile t-beige"><span style="font-size:1.3rem;">⚙️</span><span class="small">v5 live</span></div>
   </div>
 </div>
 <div class="stripes"></div>
@@ -178,19 +181,20 @@ footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
 <div class="top">
   <div class="focus">
     <h2>⚡ Focus de la semaine</h2>
-    <p>Facture Q3 → dalle toiture → SAT juillet.<br>Le reste peut respirer.</p>
+    <p id="focusText">Les tâches urgentes en priorité.</p>
   </div>
   <div class="progress">
-    <div class="prow"><span class="plabel">En cours</span><div class="pbar"><div class="pfill" id="f1" style="width:45%;background:#2b47c6;"></div></div><span class="pn" id="n1">—</span></div>
-    <div class="prow"><span class="plabel">À vérifier</span><div class="pbar"><div class="pfill" id="f2" style="width:12%;background:#f28c18;"></div></div><span class="pn" id="n2">—</span></div>
-    <div class="prow"><span class="plabel">Fait ✓</span><div class="pbar"><div class="pfill" id="f3" style="width:43%;background:#57b647;"></div></div><span class="pn" id="n3">—</span></div>
+    <div class="prow"><span class="plabel">En attente</span><div class="pbar"><div class="pfill" id="f1" style="width:45%;background:#2ec4b6;"></div></div><span class="pn" id="n1">—</span></div>
+    <div class="prow"><span class="plabel">En cours</span><div class="pbar"><div class="pfill" id="f2" style="width:30%;background:#2b47c6;"></div></div><span class="pn" id="n2">—</span></div>
+    <div class="prow"><span class="plabel">À vérifier</span><div class="pbar"><div class="pfill" id="f3" style="width:12%;background:#f28c18;"></div></div><span class="pn" id="n3">—</span></div>
+    <div class="prow"><span class="plabel">Fait ✓</span><div class="pbar"><div class="pfill" id="f4" style="width:13%;background:#57b647;"></div></div><span class="pn" id="n4">—</span></div>
   </div>
 </div>
 
 <!-- ===== SECTIONS ===== -->
 <div class="grid" id="grid"></div>
 
-<footer><a href="https://www.notion.so/182186c580ba438f874d03e52b826bab" target="_blank" rel="noopener">→ base Notion</a> · v4 Live · <span class="tag-live">✦ EN LIGNE</span></footer>
+<footer><a href="https://www.notion.so/182186c580ba438f874d03e52b826bab" target="_blank" rel="noopener">→ base Notion</a> · <span class="tag-v5">v5 Live · Sync bidirectionnelle</span></footer>
 
 <!-- ===== MODAL STATS ===== -->
 <div id="statsModal">
@@ -209,31 +213,63 @@ footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
   <div class="task-detail-card">
     <button class="close-task" onclick="closeTask()">✕ FERMER</button>
     <h2 id="detailNum"></h2>
+
     <div class="detail-row">
-      <div class="detail-label">Tâche</div>
-      <div class="detail-value" id="detailTitre"></div>
+      <div class="detail-label">Priorité</div>
+      <select class="detail-select" id="editPrio" onchange="updateTaskAttribute('prio')">
+        <option value="URGENT">🔴 URGENT</option>
+        <option value="ELEVE">🟠 ÉLEVÉ</option>
+        <option value="MOYEN">🟡 MOYEN</option>
+        <option value="BAS">🟢 BAS</option>
+      </select>
     </div>
+
     <div class="detail-row">
-      <div class="detail-label">Description / Notes</div>
-      <div class="detail-value" id="detailDesc"></div>
+      <div class="detail-label">Statut</div>
+      <select class="detail-select" id="editStatut" onchange="updateTaskAttribute('statut')">
+        <option value="attente">EN ATTENTE</option>
+        <option value="encours">EN COURS</option>
+        <option value="verif">À VÉRIFIER</option>
+        <option value="fait">FAIT ✓</option>
+      </select>
     </div>
+
     <div class="detail-row">
-      <div class="detail-label">Attributs</div>
-      <div class="detail-pills" id="detailPills"></div>
+      <div class="detail-label">Projet</div>
+      <select class="detail-select" id="editProjet" onchange="updateTaskAttribute('projet')">
+        <option value="">-- Sélectionner --</option>
+      </select>
     </div>
+
     <div class="detail-row">
       <div class="detail-label">📧 Source / Provenance</div>
       <div class="detail-value" id="detailSource" style="background:#f9f9f9;padding:10px;border-radius:8px;border-left:4px solid #2b47c6;font-weight:700;"></div>
     </div>
+
     <div class="detail-row">
       <div class="detail-label">🏷️ Contexte / Tags</div>
       <div class="detail-value" id="detailContexte" style="background:#f9f9f9;padding:10px;border-radius:8px;"></div>
     </div>
+
     <div class="detail-row">
-      <div class="detail-label">📝 Notes complètes</div>
+      <div class="detail-label">📝 Notes</div>
       <div class="detail-value" id="detailNotes" style="background:#f9f9f9;padding:10px;border-radius:8px;font-style:italic;"></div>
     </div>
-    <div class="task-actions" id="taskActions"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL NOUVEAU PROJET ===== -->
+<div id="newProjectModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:102;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border:3px solid #141414;box-shadow:10px 10px 0 #141414;padding:24px;max-width:500px;width:100%;border-radius:16px;">
+    <h2 style="font-size:1.1rem;margin-bottom:16px;font-family:'Archivo Black',sans-serif;">➕ Nouveau Projet</h2>
+    <div style="margin-bottom:16px;">
+      <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.7;margin-bottom:6px;display:block;">Nom du projet</label>
+      <input type="text" id="newProjName" placeholder="Ex: Mon projet" style="width:100%;padding:8px 10px;border:2px solid #141414;border-radius:6px;font-family:inherit;font-size:.85rem;">
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="createProject()" style="flex:1;background:#57b647;border:3px solid #141414;color:#fff;padding:10px;font-weight:700;cursor:pointer;border-radius:6px;">✓ CRÉER</button>
+      <button onclick="closeProjectModal()" style="flex:1;background:#f28c18;border:3px solid #141414;color:#fff;padding:10px;font-weight:700;cursor:pointer;border-radius:6px;">✕ ANNULER</button>
+    </div>
   </div>
 </div>
 
@@ -241,11 +277,13 @@ footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
 "use strict";
 
 const API = "/.netlify/functions/tasks";
-const CACHE_KEY = "ay_dashboard_cache_v4";
-const COLLAPSE_KEY = "ay_collapsed_v4";
-const KEY_TAB = "ay_tab_v4";
+const CACHE_KEY = "ay_dashboard_cache_v5";
+const COLLAPSE_KEY = "ay_collapsed_v5";
+const KEY_TAB = "ay_tab_v5";
+const PROJECTS_KEY = "ay_projects_v5";
 
 let ALL_TASKS = [];
+let CUSTOM_PROJECTS = [];
 let COLLAPSED = {};
 let TAB = "all";
 let CURRENT_TASK = null;
@@ -253,8 +291,10 @@ let chartStatus, chartPrio;
 
 try{ COLLAPSED = JSON.parse(localStorage.getItem(COLLAPSE_KEY)||"{}")||{}; }catch(_){ COLLAPSED = {}; }
 try{ TAB = localStorage.getItem(KEY_TAB)||"all"; }catch(_){}
+try{ CUSTOM_PROJECTS = JSON.parse(localStorage.getItem(PROJECTS_KEY)||"[]")||[]; }catch(_){ CUSTOM_PROJECTS = []; }
 
 const SECTIONS = [
+  {id:"attente", titre:"⏳ En attente", head:"h-attente"},
   {id:"encours", titre:"▶ En cours", head:"h-encours"},
   {id:"verif", titre:"🔍 À vérifier", head:"h-verif"},
   {id:"odoo", titre:"🧩 Odoo 26", head:"h-pink"},
@@ -265,72 +305,88 @@ const SECTIONS = [
 
 const TABS = [
   {id:"all", label:"Tout"},
+  {id:"urgent", label:"🔥 URGENT"},
   {id:"admin", label:"Admin"},
   {id:"projets", label:"Projets"},
   {id:"patrimoine", label:"Patrimoine"},
 ];
 
+const DEFAULT_PROJECTS = ["ODOO 26","CASA MIAMI","IMMOBILIER","FISCAL"];
+
 /* ================= UTILITAIRES ================= */
 const norm = s => (s||"").toString().normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim();
 const esc = s => (s||"").toString().replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const isDone = t => { const n=norm(t.statut); return n.includes("fait")||n.includes("done")||n.includes("termin"); };
-const isInProgress = t => { const n=norm(t.statut); return n.includes("cours")||n.includes("progress"); };
-const isVerify = t => norm(t.statut).includes("verification");
+const isDone = t => t.statut==="fait" || norm(t.statut).includes("fait");
+const isAttente = t => t.statut==="attente" || norm(t.statut).includes("attente");
+const isEncours = t => t.statut==="encours" || norm(t.statut).includes("encours");
+const isVerify = t => t.statut==="verif" || norm(t.statut).includes("verif");
+const isUrgent = t => t.prio==="URGENT" || norm(t.prio).includes("urgent");
+
 function prioRank(t){
-  const n = norm(t.priorite||"");
-  if(n.includes("haut")||n.includes("urgent")||n.includes("high")) return 0;
-  if(n.includes("moyen")||n.includes("normal")||n.includes("medium")) return 1;
-  if(n.includes("bas")||n.includes("low")) return 2;
-  return 3;
+  const p = t.prio||"";
+  if(p==="URGENT") return 0;
+  if(p==="ELEVE") return 1;
+  if(p==="MOYEN") return 2;
+  if(p==="BAS") return 3;
+  return 4;
 }
 
 /* ================= CLASSIFICATION ================= */
-const PROJECT_TAGS = ["ODOO 26","PREVENTIA","SANTA CORP","JONNIAUX","CASA MIAMI"];
-function classifyTask(t){
+const PROJECT_TAGS = ["ODOO 26","CASA MIAMI","IMMOBILIER","FISCAL","PREVENTIA","SANTA CORP","JONNIAUX"];
+function getProjectName(t){
+  if(t.projet) return t.projet;
   const ctx = (t.contexte||[]).map(norm);
   const s = norm(t.source||"");
-  if(s.includes("email")||s.includes("e-box")||s.includes("ebox")||s.includes("mail")) return "admin";
-  for(const tag of PROJECT_TAGS) if(ctx.some(c=>c===norm(tag)||c.includes(norm(tag)))) return "projets";
-  const c = ctx.join(" ");
-  if(c.includes("immo")||c.includes("immobilier")||c.includes("fiscal")||c.includes("tva")||c.includes("impot")||c.includes("resico")) return "patrimoine";
-  return "admin";
+  for(const tag of PROJECT_TAGS) if(ctx.some(c=>c===norm(tag))) return tag;
+  return "AUTRES";
 }
 
 function sectionOf(t){
-  if(isInProgress(t)) return "encours";
-  if(isVerify(t)) return "verif";
   if(isDone(t)) return null;
-  const ctx = (t.contexte||[]).map(norm).join(" ");
-  if(ctx.includes("odoo")) return "odoo";
-  if(ctx.includes("casa")) return "casa";
-  if(ctx.includes("immo")) return "immo";
-  if(ctx.includes("fiscal")||ctx.includes("tva")) return "fiscal";
-  return "encours";
+  if(isAttente(t)) return "attente";
+  if(isEncours(t)) return "encours";
+  if(isVerify(t)) return "verif";
+  const proj = getProjectName(t);
+  if(proj==="ODOO 26") return "odoo";
+  if(proj==="CASA MIAMI") return "casa";
+  if(proj==="IMMOBILIER") return "immo";
+  if(proj==="FISCAL") return "fiscal";
+  return "attente";
+}
+
+function matchesTab(t){
+  if(TAB==="all") return !isDone(t);
+  if(TAB==="urgent") return !isDone(t) && isUrgent(t);
+  if(TAB==="admin") return !isDone(t) && getProjectName(t)==="AUTRES";
+  if(TAB==="projets") return !isDone(t) && ["ODOO 26","CASA MIAMI"].includes(getProjectName(t));
+  if(TAB==="patrimoine") return !isDone(t) && ["IMMOBILIER","FISCAL"].includes(getProjectName(t));
+  return false;
 }
 
 /* ================= RENDU ================= */
-function cardHTML(t, onclick){
-  const pc = prioRank(t)===0?"p-haute":prioRank(t)===1?"p-moyenne":"p-basse";
-  const hasVerif = isVerify(t);
-  return `<div class="card${hasVerif?" verif":""}" onclick="${onclick}">
+function cardHTML(t){
+  const pc = prioRank(t)===0?"p-urgent":prioRank(t)===1?"p-eleve":prioRank(t)===2?"p-moyen":"p-bas";
+  const isUrgClass = isUrgent(t)?" urgent":"";
+  const isVerifClass = isVerify(t)?" verif":"";
+  return `<div class="card${isUrgClass}${isVerifClass}" onclick="openTask('${esc(t.id)}')">
     <div class="line1"><span class="num">${esc(t.num||"?")}</span><span class="title">${esc(t.tache)}</span></div>
     <div class="desc">${esc((t.notes||"—").substring(0,80))}</div>
     <div class="pills">
-      ${t.priorite?`<span class="pill ${pc}">${esc(t.priorite)}</span>`:""}
-      ${hasVerif?`<span class="pill p-verif">🔍 VÉRIFIER</span>`:""}
+      <span class="pill ${pc}">${t.prio||"?"}</span>
+      ${t.projet?`<span class="pill">${esc(t.projet)}</span>`:""}
       ${t.echeance?`<span class="pill">📅 ${esc(t.echeance.slice(5))}</span>`:""}
     </div>
   </div>`;
 }
 
 function render(){
-  const visible = TAB==="all" ? ALL_TASKS.filter(t=>!isDone(t)) : ALL_TASKS.filter(t=>!isDone(t)&&classifyTask(t)===TAB);
+  const visible = ALL_TASKS.filter(matchesTab);
   let html = "";
   for(const sec of SECTIONS){
     const tasks = visible.filter(t=>sectionOf(t)===sec.id);
-    if(!tasks.length) continue;
+    if(!tasks.length && (TAB!=="all")) continue;
     const collapsed = !!COLLAPSED[sec.id];
-    const body = tasks.map(t=>cardHTML(t,`openTask('${esc(t.id)}')`)).join("");
+    const body = tasks.length ? tasks.map(cardHTML).join("") : '<div style="font-size:.8rem;font-style:italic;padding:12px 4px;">Rien ici ✓</div>';
     html += `<div class="section${collapsed?" collapsed":""}" id="sec-${sec.id}">
       <div class="sec-head ${sec.head}" onclick="toggleSec('${sec.id}')">
         <h2>${sec.titre}</h2><span class="count">${tasks.length}</span><span class="caret">▲</span>
@@ -345,32 +401,39 @@ function render(){
 
 function renderTabs(){
   document.getElementById("tabs").innerHTML = TABS.map(tb=>{
-    const n = tb.id==="all" ? ALL_TASKS.filter(t=>!isDone(t)).length : ALL_TASKS.filter(t=>!isDone(t)&&classifyTask(t)===tb.id).length;
+    const n = tb.id==="all" ? ALL_TASKS.filter(t=>!isDone(t)).length : ALL_TASKS.filter(matchesTab).length;
     return `<button class="tab${TAB===tb.id?" active":""}" onclick="setTab('${tb.id}')">${tb.label}<span class="n">${n}</span></button>`;
   }).join("");
 }
 
 function updateStats(){
   const open = ALL_TASKS.filter(t=>!isDone(t));
-  const encours = open.filter(isInProgress).length;
+  const urgent = open.filter(isUrgent).length;
+  const attente = open.filter(isAttente).length;
+  const encours = open.filter(isEncours).length;
   const verif = open.filter(isVerify).length;
   const fait = ALL_TASKS.filter(isDone).length;
 
   document.getElementById("nOpen").textContent = open.length;
-  document.getElementById("nBlocs").textContent = new Set(open.flatMap(t=>t.contexte||[])).size;
-  document.getElementById("n1").textContent = encours;
-  document.getElementById("n2").textContent = verif;
-  document.getElementById("n3").textContent = fait;
+  document.getElementById("nProjects").textContent = new Set(open.map(getProjectName)).size;
+  document.getElementById("nUrgent").textContent = urgent + " urgentes";
+  document.getElementById("n1").textContent = attente;
+  document.getElementById("n2").textContent = encours;
+  document.getElementById("n3").textContent = verif;
+  document.getElementById("n4").textContent = fait;
 
   const total = ALL_TASKS.length||1;
-  document.getElementById("f1").style.width = Math.max(5, encours/total*100)+"%";
-  document.getElementById("f2").style.width = Math.max(5, verif/total*100)+"%";
-  document.getElementById("f3").style.width = Math.max(5, fait/total*100)+"%";
+  document.getElementById("f1").style.width = Math.max(5, attente/total*100)+"%";
+  document.getElementById("f2").style.width = Math.max(5, encours/total*100)+"%";
+  document.getElementById("f3").style.width = Math.max(5, verif/total*100)+"%";
+  document.getElementById("f4").style.width = Math.max(5, fait/total*100)+"%";
 
   if(chartStatus){
-    const prios = {haute:open.filter(t=>prioRank(t)===0).length, moyenne:open.filter(t=>prioRank(t)===1).length, basse:open.filter(t=>prioRank(t)===2).length};
-    chartStatus.data.datasets[0].data = [encours, verif, fait];
-    chartPrio.data.datasets[0].data = [prios.haute, prios.moyenne, prios.basse];
+    chartStatus.data.datasets[0].data = [attente, encours, verif, fait];
+    const urgentC = open.filter(t=>prioRank(t)===0).length;
+    const elevC = open.filter(t=>prioRank(t)===1).length;
+    const moyC = open.filter(t=>prioRank(t)===2).length;
+    chartPrio.data.datasets[0].data = [urgentC, elevC, moyC];
     chartStatus.update();
     chartPrio.update();
   }
@@ -398,24 +461,22 @@ function openTask(id){
   if(!CURRENT_TASK) return;
   const t = CURRENT_TASK;
   document.getElementById("detailNum").textContent = `${esc(t.num||"?")} • ${esc(t.tache)}`;
-  document.getElementById("detailTitre").textContent = esc(t.tache);
-  document.getElementById("detailDesc").textContent = esc(t.notes||"(pas de description)");
-
-  let pills = "";
-  if(t.priorite) pills += `<span class="detail-pill" style="background:#${prioRank(t)===0?"e8391d":prioRank(t)===1?"f28c18":"57b647"};color:#fff;">${esc(t.priorite)}</span>`;
-  if(isVerify(t)) pills += `<span class="detail-pill" style="background:#f28c18;color:#fff;">🔍 À VÉRIFIER</span>`;
-  if(t.echeance) pills += `<span class="detail-pill">📅 ${esc(t.echeance)}</span>`;
-  document.getElementById("detailPills").innerHTML = pills;
-
+  document.getElementById("editPrio").value = t.prio||"MOYEN";
+  document.getElementById("editStatut").value = t.statut||"attente";
+  document.getElementById("editProjet").value = t.projet||"";
   document.getElementById("detailSource").innerHTML = t.source ? `<strong>${esc(t.source)}</strong>` : "(pas de source)";
   document.getElementById("detailContexte").innerHTML = (t.contexte||[]).length ? (t.contexte||[]).map(c=>`<span class="detail-pill" style="margin:4px;">${esc(c)}</span>`).join("") : "(pas de contexte)";
-  document.getElementById("detailNotes").textContent = t.notes || "(pas de notes additionnelles)";
+  document.getElementById("detailNotes").textContent = t.notes || "(pas de notes)";
 
-  document.getElementById("taskActions").innerHTML = `
-    <button class="action-btn done" onclick="doAction('done')">✓ FAIT</button>
-    <button class="action-btn progress" onclick="doAction('in_progress')">▶ EN COURS</button>
-    <button class="action-btn verify" onclick="doAction('verify')">🔍 À VÉRIFIER</button>
-  `;
+  const projSelect = document.getElementById("editProjet");
+  projSelect.innerHTML = '<option value="">-- Aucun --</option>';
+  [...DEFAULT_PROJECTS, ...CUSTOM_PROJECTS].forEach(p=>{
+    const opt = document.createElement("option");
+    opt.value = p;
+    opt.textContent = p;
+    if(t.projet===p) opt.selected = true;
+    projSelect.appendChild(opt);
+  });
 
   document.getElementById("taskModal").classList.add("show");
 }
@@ -425,31 +486,44 @@ function closeTask(){
   CURRENT_TASK = null;
 }
 
-async function doAction(action){
+async function updateTaskAttribute(attr){
   if(!CURRENT_TASK) return;
-  const btn = event.target;
-  btn.disabled = true;
-  const prev = btn.textContent;
-  btn.textContent = "…";
+  const newVal = document.getElementById("edit"+attr.charAt(0).toUpperCase()+attr.slice(1)).value;
+  const action = attr==="statut" ? newVal : attr==="prio" ? "changeprio" : "changeproject";
   try{
-    const res = await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page_id:CURRENT_TASK.id,action})});
+    const res = await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page_id:CURRENT_TASK.id,action,value:newVal})});
     const data = await res.json().catch(()=>({}));
     if(!res.ok || !data.ok) throw new Error(data.message||"Erreur");
-    if(action==="done") CURRENT_TASK.statut="Fait";
-    else if(action==="verify") CURRENT_TASK.statut="En attente de vérification";
-    else CURRENT_TASK.statut="En cours";
+    CURRENT_TASK[attr] = newVal;
     localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),tasks:ALL_TASKS}));
-    closeTask();
     render();
   }catch(e){
-    btn.disabled = false;
-    btn.textContent = prev;
     alert("⚠️ Erreur : "+e.message);
+    openTask(CURRENT_TASK.id);
   }
 }
 
 function toggleStats(){
   document.getElementById("statsModal").classList.toggle("show");
+}
+
+function showNewProjectModal(){
+  document.getElementById("newProjectModal").style.display = "flex";
+}
+
+function closeProjectModal(){
+  document.getElementById("newProjectModal").style.display = "none";
+}
+
+function createProject(){
+  const name = (document.getElementById("newProjName").value||"").trim().toUpperCase();
+  if(!name) { alert("Nom requis"); return; }
+  if(!CUSTOM_PROJECTS.includes(name)){
+    CUSTOM_PROJECTS.push(name);
+    try{ localStorage.setItem(PROJECTS_KEY, JSON.stringify(CUSTOM_PROJECTS)); }catch(_){}
+  }
+  document.getElementById("newProjName").value = "";
+  closeProjectModal();
 }
 
 /* ================= CHARGEMENT ================= */
@@ -476,15 +550,10 @@ async function loadTasks(){
     if(!res.ok || !data.ok) throw Object.assign(new Error(data.message||("HTTP "+res.status)),{code:data.error||"HTTP_"+res.status});
     ALL_TASKS = data.tasks||[];
     localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),tasks:ALL_TASKS}));
-    document.getElementById("chipMaj").textContent =
-      "MAJ : " + new Date().toLocaleDateString("fr-BE",{day:"2-digit",month:"2-digit",year:"numeric"}) +
-      " " + new Date().toLocaleTimeString("fr-BE",{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("chipMaj").textContent = "MAJ : " + new Date().toLocaleDateString("fr-BE",{day:"2-digit",month:"2-digit",year:"numeric"}) + " " + new Date().toLocaleTimeString("fr-BE",{hour:"2-digit",minute:"2-digit"});
     render();
   }catch(e){
-    const isConfig = (e.code||"").includes("NOTION_TOKEN");
-    showBanner("bannerConfig", isConfig
-      ? "Notion pas encore connectée. Configure NOTION_TOKEN dans Netlify."
-      : `Erreur : ${esc(e.message)}`);
+    showBanner("bannerConfig", (e.code||"").includes("NOTION_TOKEN") ? "Notion pas encore connectée." : `Erreur : ${esc(e.message)}`);
     try{
       const cached = JSON.parse(localStorage.getItem(CACHE_KEY)||"null");
       if(cached && cached.tasks && cached.tasks.length){
@@ -504,14 +573,14 @@ function initCharts(){
   const ctxStatus = document.getElementById("chartStatus").getContext("2d");
   chartStatus = new Chart(ctxStatus, {
     type:"doughnut",
-    data:{labels:["En cours","À vérifier","Fait"],datasets:[{data:[0,0,0],backgroundColor:["#2b47c6","#f28c18","#57b647"],borderColor:"#141414",borderWidth:3}]},
+    data:{labels:["En attente","En cours","À vérifier","Fait"],datasets:[{data:[0,0,0,0],backgroundColor:["#2ec4b6","#2b47c6","#f28c18","#57b647"],borderColor:"#141414",borderWidth:3}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
   });
 
   const ctxPrio = document.getElementById("chartPrio").getContext("2d");
   chartPrio = new Chart(ctxPrio, {
     type:"doughnut",
-    data:{labels:["Haute","Moyenne","Basse"],datasets:[{data:[0,0,0],backgroundColor:["#e8391d","#f28c18","#57b647"],borderColor:"#141414",borderWidth:3}]},
+    data:{labels:["URGENT","ÉLEVÉ","MOYEN"],datasets:[{data:[0,0,0],backgroundColor:["#e8391d","#f28c18","#ffd23f"],borderColor:"#141414",borderWidth:3}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
   });
 }
