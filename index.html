@@ -130,6 +130,20 @@ header h1{font-size:1.5rem;font-weight:700;}
 .p-urgent{background:var(--red);color:#fff;} .p-eleve{background:var(--orange);} .p-moyen{background:var(--yellow);} .p-bas{background:var(--green);}
 .p-verif{background:var(--turq);color:#fff;}
 
+/* ========== BOUTONS STATUTS & PROJETS ========== */
+.status-buttons, .project-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.status-btn, .project-btn{padding:8px 12px;border:2px solid var(--ink);border-radius:8px;cursor:pointer;font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;transition:all .2s ease;background:#fff;}
+.status-btn{min-width:90px;text-align:center;}
+.project-btn{flex:1;min-width:80px;}
+.status-btn.active, .project-btn.active{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);font-size:.8rem;}
+.status-btn:hover, .project-btn:hover{transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--ink);}
+.sb-attente{border-color:#2ec4b6;}.sb-attente.active{background:#2ec4b6;color:#fff;}
+.sb-encours{border-color:#2b47c6;}.sb-encours.active{background:#2b47c6;color:#fff;}
+.sb-verif{border-color:#f28c18;}.sb-verif.active{background:#f28c18;color:#fff;}
+.sb-fait{border-color:#57b647;}.sb-fait.active{background:#57b647;color:#fff;}
+.btn-add-project{padding:8px 12px;border:2px dashed var(--ink);background:#fff;border-radius:8px;cursor:pointer;font-weight:700;font-size:1rem;min-width:44px;}
+.btn-add-project:hover{background:var(--yellow);}
+
 footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
 .tag-v5{display:inline-block;background:var(--blue);color:#fff;padding:2px 10px;border-radius:99px;font-weight:700;}
 </style>
@@ -226,19 +240,17 @@ footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
 
     <div class="detail-row">
       <div class="detail-label">Statut</div>
-      <select class="detail-select" id="editStatut" onchange="updateTaskAttribute('statut')">
-        <option value="attente">EN ATTENTE</option>
-        <option value="encours">EN COURS</option>
-        <option value="verif">À VÉRIFIER</option>
-        <option value="fait">FAIT ✓</option>
-      </select>
+      <div class="status-buttons">
+        <button class="status-btn sb-attente" data-value="attente" onclick="updateTaskAttributeViaButton('statut', 'attente')">⏳ En attente</button>
+        <button class="status-btn sb-encours" data-value="encours" onclick="updateTaskAttributeViaButton('statut', 'encours')">▶ En cours</button>
+        <button class="status-btn sb-verif" data-value="verif" onclick="updateTaskAttributeViaButton('statut', 'verif')">🔍 À vérifier</button>
+        <button class="status-btn sb-fait" data-value="fait" onclick="updateTaskAttributeViaButton('statut', 'fait')">✓ Fait</button>
+      </div>
     </div>
 
     <div class="detail-row">
       <div class="detail-label">Projet</div>
-      <select class="detail-select" id="editProjet" onchange="updateTaskAttribute('projet')">
-        <option value="">-- Sélectionner --</option>
-      </select>
+      <div class="project-buttons" id="projectButtons"></div>
     </div>
 
     <div class="detail-row">
@@ -461,22 +473,31 @@ function openTask(id){
   if(!CURRENT_TASK) return;
   const t = CURRENT_TASK;
   document.getElementById("detailNum").textContent = `${esc(t.num||"?")} • ${esc(t.tache)}`;
-  document.getElementById("editPrio").value = t.prio||"MOYEN";
-  document.getElementById("editStatut").value = t.statut||"attente";
-  document.getElementById("editProjet").value = t.projet||"";
   document.getElementById("detailSource").innerHTML = t.source ? `<strong>${esc(t.source)}</strong>` : "(pas de source)";
   document.getElementById("detailContexte").innerHTML = (t.contexte||[]).length ? (t.contexte||[]).map(c=>`<span class="detail-pill" style="margin:4px;">${esc(c)}</span>`).join("") : "(pas de contexte)";
   document.getElementById("detailNotes").textContent = t.notes || "(pas de notes)";
 
-  const projSelect = document.getElementById("editProjet");
-  projSelect.innerHTML = '<option value="">-- Aucun --</option>';
-  [...DEFAULT_PROJECTS, ...CUSTOM_PROJECTS].forEach(p=>{
-    const opt = document.createElement("option");
-    opt.value = p;
-    opt.textContent = p;
-    if(t.projet===p) opt.selected = true;
-    projSelect.appendChild(opt);
+  // Rendre les boutons de statut
+  document.querySelectorAll(".status-btn").forEach(btn=>{
+    const val = btn.getAttribute("data-value");
+    btn.classList.toggle("active", val === (t.statut||"attente"));
   });
+
+  // Rendre les boutons de projet
+  const projBtns = document.getElementById("projectButtons");
+  projBtns.innerHTML = '';
+  [...DEFAULT_PROJECTS, ...CUSTOM_PROJECTS].forEach(p=>{
+    const btn = document.createElement("button");
+    btn.className = "project-btn" + (t.projet===p ? " active" : "");
+    btn.textContent = p;
+    btn.onclick = () => updateTaskAttributeViaButton('projet', p);
+    projBtns.appendChild(btn);
+  });
+  const addBtn = document.createElement("button");
+  addBtn.className = "btn-add-project";
+  addBtn.textContent = "➕";
+  addBtn.onclick = () => { closeTask(); showNewProjectModal(); };
+  projBtns.appendChild(addBtn);
 
   document.getElementById("taskModal").classList.add("show");
 }
@@ -497,6 +518,23 @@ async function updateTaskAttribute(attr){
     CURRENT_TASK[attr] = newVal;
     localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),tasks:ALL_TASKS}));
     render();
+  }catch(e){
+    alert("⚠️ Erreur : "+e.message);
+    openTask(CURRENT_TASK.id);
+  }
+}
+
+async function updateTaskAttributeViaButton(attr, val){
+  if(!CURRENT_TASK) return;
+  const action = attr==="statut" ? val : attr==="prio" ? "changeprio" : "changeproject";
+  try{
+    const res = await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page_id:CURRENT_TASK.id,action,value:val})});
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok || !data.ok) throw new Error(data.message||"Erreur");
+    CURRENT_TASK[attr] = val;
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),tasks:ALL_TASKS}));
+    render();
+    openTask(CURRENT_TASK.id);
   }catch(e){
     alert("⚠️ Erreur : "+e.message);
     openTask(CURRENT_TASK.id);
