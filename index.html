@@ -328,6 +328,11 @@ const DEFAULT_PROJECTS = ["ODOO 26","CASA MIAMI","IMMOBILIER","FISCAL"];
 /* ================= UTILITAIRES ================= */
 const norm = s => (s||"").toString().normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim();
 const esc = s => (s||"").toString().replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const decodeHTML = s => {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = s;
+  return txt.value;
+};
 const isDone = t => t.statut==="fait" || norm(t.statut).includes("fait");
 const isAttente = t => t.statut==="attente" || norm(t.statut).includes("attente");
 const isEncours = t => t.statut==="encours" || norm(t.statut).includes("encours");
@@ -381,11 +386,11 @@ function cardHTML(t){
   const isUrgClass = isUrgent(t)?" urgent":"";
   const isVerifClass = isVerify(t)?" verif":"";
   return `<div class="card${isUrgClass}${isVerifClass}" onclick="openTask('${esc(t.id)}')">
-    <div class="line1"><span class="num">${esc(t.num||"?")}</span><span class="title">${esc(t.tache)}</span></div>
-    <div class="desc">${esc((t.notes||"—").substring(0,80))}</div>
+    <div class="line1"><span class="num">${esc(t.num||"?")}</span><span class="title">${esc(decodeHTML(t.tache))}</span></div>
+    <div class="desc">${esc(decodeHTML((t.notes||"—").substring(0,80)))}</div>
     <div class="pills">
       <span class="pill ${pc}">${t.prio||"?"}</span>
-      ${t.projet?`<span class="pill">${esc(t.projet)}</span>`:""}
+      ${t.projet?`<span class="pill">${esc(decodeHTML(t.projet))}</span>`:""}
       ${t.echeance?`<span class="pill">📅 ${esc(t.echeance.slice(5))}</span>`:""}
     </div>
   </div>`;
@@ -472,10 +477,10 @@ function openTask(id){
   CURRENT_TASK = ALL_TASKS.find(t=>t.id===id);
   if(!CURRENT_TASK) return;
   const t = CURRENT_TASK;
-  document.getElementById("detailNum").textContent = `${esc(t.num||"?")} • ${esc(t.tache)}`;
-  document.getElementById("detailSource").innerHTML = t.source ? `<strong>${esc(t.source)}</strong>` : "(pas de source)";
-  document.getElementById("detailContexte").innerHTML = (t.contexte||[]).length ? (t.contexte||[]).map(c=>`<span class="detail-pill" style="margin:4px;">${esc(c)}</span>`).join("") : "(pas de contexte)";
-  document.getElementById("detailNotes").textContent = t.notes || "(pas de notes)";
+  document.getElementById("detailNum").textContent = `${esc(t.num||"?")} • ${decodeHTML(esc(t.tache))}`;
+  document.getElementById("detailSource").innerHTML = t.source ? `<strong>${esc(decodeHTML(t.source))}</strong>` : "(pas de source)";
+  document.getElementById("detailContexte").innerHTML = (t.contexte||[]).length ? (t.contexte||[]).map(c=>`<span class="detail-pill" style="margin:4px;">${esc(decodeHTML(c))}</span>`).join("") : "(pas de contexte)";
+  document.getElementById("detailNotes").textContent = decodeHTML(t.notes) || "(pas de notes)";
 
   // Rendre les boutons de statut
   document.querySelectorAll(".status-btn").forEach(btn=>{
