@@ -5,14 +5,24 @@
 const DATA_SOURCE_ID = "182186c5-80ba-438f-874d-03e52b826bab";
 const API = "https://api.notion.com/v1";
 
-const STATUS_FOR_ACTION = {
-  attente: "En attente",
+const STATUS_MAP = {
+  attente: "À faire",
   encours: "En cours",
-  verif: "À vérifier",
+  verif: "En attente de vérification",
   fait: "Fait",
   done: "Fait",
   in_progress: "En cours",
   verify: "En attente de vérification",
+};
+
+const PRIORITY_MAP = {
+  URGENT: "Haute",
+  ELEVE: "Moyenne",
+  MOYEN: "Basse",
+  BAS: "BAS",
+  Haute: "Haute",
+  Moyenne: "Moyenne",
+  Basse: "Basse",
 };
 
 function json(statusCode, body) {
@@ -73,6 +83,7 @@ function mapPage(p) {
   const props = p.properties || {};
   const get = (name) => props[name] || {};
   const uid = get("N°").unique_id;
+  const prio = (get("Priorité").select || {}).name || "BAS";
   return {
     id: p.id,
     url: p.url || null,
@@ -81,7 +92,8 @@ function mapPage(p) {
       : null,
     tache: plain(get("Tâche").title),
     statut: (get("Statut").select || {}).name || null,
-    priorite: (get("Priorité").select || {}).name || null,
+    prio: prio === "Haute" ? "URGENT" : prio === "Moyenne" ? "ELEVE" : prio === "Basse" ? "MOYEN" : "BAS",
+    projet: (get("Projet").select || {}).name || null,
     echeance: (get("Échéance").date || {}).start || null,
     source: (get("Source").select || {}).name || null,
     contexte: (get("Contexte").multi_select || []).map((o) => o.name),
@@ -128,25 +140,18 @@ exports.handler = async (event) => {
 
       const properties = {};
 
-      // Gestion des statuts (ancien format pour compatibilité)
-      if (["done", "in_progress", "verify"].includes(action)) {
-        const statut = STATUS_FOR_ACTION[action];
+      // Gestion des statuts
+      if (["done", "in_progress", "verify", "attente", "encours", "verif", "fait"].includes(action)) {
+        const statut = STATUS_MAP[action];
         properties["Statut"] = { select: { name: statut } };
-        if (action === "done") {
-          properties["Fait le"] = { date: { start: new Date().toISOString().slice(0, 10) } };
-        }
-      }
-      // Gestion des changements de statut (nouveau format v5)
-      else if (["attente", "encours", "verif", "fait"].includes(action)) {
-        const statut = STATUS_FOR_ACTION[action];
-        properties["Statut"] = { select: { name: statut } };
-        if (action === "fait") {
+        if (["done", "fait"].includes(action)) {
           properties["Fait le"] = { date: { start: new Date().toISOString().slice(0, 10) } };
         }
       }
       // Changement de priorité
       else if (action === "changeprio" && value) {
-        properties["Priorité"] = { select: { name: value } };
+        const notionPrio = PRIORITY_MAP[value] || value;
+        properties["Priorité"] = { select: { name: notionPrio } };
       }
       // Changement de projet
       else if (action === "changeproject" && value) {

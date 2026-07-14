@@ -144,6 +144,11 @@ header h1{font-size:1.5rem;font-weight:700;}
 .btn-add-project{padding:8px 12px;border:2px dashed var(--ink);background:#fff;border-radius:8px;cursor:pointer;font-weight:700;font-size:1rem;min-width:44px;}
 .btn-add-project:hover{background:var(--yellow);}
 
+/* ========== BOUTON ACTION RAPIDE ========== */
+.btn-quick-done{padding:6px 10px;background:var(--green);color:#fff;border:2px solid var(--ink);border-radius:8px;cursor:pointer;font-weight:700;font-size:.9rem;flex-shrink:0;transition:all .2s ease;}
+.btn-quick-done:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--ink);}
+.btn-quick-done:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink);}
+
 footer{margin:26px 0 14px;font-size:.7rem;text-align:center;opacity:.7;}
 .tag-v5{display:inline-block;background:var(--blue);color:#fff;padding:2px 10px;border-radius:99px;font-weight:700;}
 </style>
@@ -385,13 +390,18 @@ function cardHTML(t){
   const pc = prioRank(t)===0?"p-urgent":prioRank(t)===1?"p-eleve":prioRank(t)===2?"p-moyen":"p-bas";
   const isUrgClass = isUrgent(t)?" urgent":"";
   const isVerifClass = isVerify(t)?" verif":"";
-  return `<div class="card${isUrgClass}${isVerifClass}" onclick="openTask('${esc(t.id)}')">
-    <div class="line1"><span class="num">${esc(t.num||"?")}</span><span class="title">${esc(decodeHTML(t.tache))}</span></div>
-    <div class="desc">${esc(decodeHTML((t.notes||"—").substring(0,80)))}</div>
-    <div class="pills">
-      <span class="pill ${pc}">${t.prio||"?"}</span>
-      ${t.projet?`<span class="pill">${esc(decodeHTML(t.projet))}</span>`:""}
-      ${t.echeance?`<span class="pill">📅 ${esc(t.echeance.slice(5))}</span>`:""}
+  return `<div class="card${isUrgClass}${isVerifClass}">
+    <div style="display:flex;gap:8px;align-items:flex-start;">
+      <div style="flex:1;cursor:pointer;" onclick="openTask('${esc(t.id)}')">
+        <div class="line1"><span class="num">${esc(t.num||"?")}</span><span class="title">${esc(decodeHTML(t.tache))}</span></div>
+        <div class="desc">${esc(decodeHTML((t.notes||"—").substring(0,80)))}</div>
+        <div class="pills">
+          <span class="pill ${pc}">${t.prio||"?"}</span>
+          ${t.projet?`<span class="pill">${esc(decodeHTML(t.projet))}</span>`:""}
+          ${t.echeance?`<span class="pill">📅 ${esc(t.echeance.slice(5))}</span>`:""}
+        </div>
+      </div>
+      <button class="btn-quick-done" onclick="markAsDone('${esc(t.id)}'); event.stopPropagation();" title="Marquer comme fait">✓</button>
     </div>
   </div>`;
 }
@@ -543,6 +553,21 @@ async function updateTaskAttributeViaButton(attr, val){
   }catch(e){
     alert("⚠️ Erreur : "+e.message);
     openTask(CURRENT_TASK.id);
+  }
+}
+
+async function markAsDone(id){
+  const task = ALL_TASKS.find(t=>t.id===id);
+  if(!task) return;
+  try{
+    const res = await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page_id:id,action:"fait"})});
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok || !data.ok) throw new Error(data.message||"Erreur");
+    ALL_TASKS = ALL_TASKS.filter(t=>t.id!==id);
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),tasks:ALL_TASKS}));
+    render();
+  }catch(e){
+    alert("⚠️ Erreur : "+e.message);
   }
 }
 
