@@ -1,0 +1,9 @@
+# Secrets — ne jamais committer
+.env
+.env.*
+
+# Netlify
+.netlify/
+
+# Dépendances
+node_modules/
